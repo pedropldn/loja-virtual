@@ -1,0 +1,39 @@
+
+main form {
+    max-width: 30em;
+    margin: 0 auto;
+    padding-top: 2em;
+}
+
+main form#info-product {
+    max-width: 100%;
+}
+
+label, input, textarea {
+    width: 100%;
+}
+ 
+#submit {
+    width: auto;
+    margin: 0 auto 1.5em;
+    display: block;
+    padding: 0.5em 3em;
+}
+
+textarea {
+    min-height: 13em;
+}
+
+.css-input-box {
+    padding: 0 0 1em;
+}
+
+.css-msg-erro {
+    min-height: 1em;
+    color: red;
+    text-align: center;
+}
+
+input {
+    text-align: center;
+}

@@ -1,0 +1,26 @@
+main {
+    padding-top: 2em;
+}
+
+main form {
+    max-width: 30em;
+    margin: 0 auto;
+    padding-top: 1em;
+}
+
+main form input {
+    display: block;
+    width: 100%;
+}
+
+main form input[type=submit] {
+    width: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 0.5em 2em;
+}
+
+main form div .css-msg-erro {
+    min-height: 1em;
+}
+

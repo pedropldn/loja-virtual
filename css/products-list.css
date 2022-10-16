@@ -1,0 +1,21 @@
+p {
+    color: inherit;
+}
+
+.css-container-product a:link {
+    text-align: center;
+    color: black;
+    padding: 1em;
+    margin-bottom: 2em;
+    border-radius: 16px;
+}
+.css-container-product a:hover {
+    text-decoration-line: none;
+    color: rgb(0,123,255);
+}
+
+#welcome {
+    padding: 1em 0;
+    text-align: center;
+    text-transform: capitalize;
+}
