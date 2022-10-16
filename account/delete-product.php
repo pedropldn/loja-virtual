@@ -56,31 +56,37 @@ $produto = buscar_produto();
     }
 
 ?>
+<section class="container col-12 col-md-9 col-lg-10">
+    <div class="col-12 text-center">
+        <h1>Você tem certeza que deseja excluir o produto abaixo? </h1>
+    </div>
 
-<h1>Você tem certeza que deseja excluir o produto abaixo? </h1>
+    <div class="container row col-12" style="padding-top: 2em;">
+        <div class="col-12 col-md-8">
+            <h1><?php echo $produto[0]['titulo_produto'] ?></h1>
+            
+            <div>
+                <h4>R$ <?php echo formatar_preco($produto[0]['preco']); ?></h4>
+                <p>Quantidade disponível: <?php echo $produto[0]['quantidade_estoque']; ?></p>
+            </div>
+        </div>
+        <figure class="col-12 col-md-4">
+            <figcaption style="display: none;"><?php echo $produto[0]['titulo_produto']; ?></figcaption>
+            <img src="imagem-produto.php?id_produto=<?php echo $produto[0]['id_produto']; ?>"
+                alt="<?php echo $produto[0]['titulo_produto']; ?>"
+                width="200" height="150"
+            >
+        </figure>
+    <div class="col-12">
+        <h2>Descrição do Produto: </h2>
+        <div><?php echo $produto[0]['descricao']; ?></div>
+    </div>
 
-<h1><?php echo $produto[0]['titulo_produto'] ?></h1>
-<figure>
-    <figcaption style="display: none;"><?php echo $produto[0]['titulo_produto']; ?></figcaption>
-    <img src="imagem-produto.php?id_produto=<?php echo $produto[0]['id_produto']; ?>"
-        alt="<?php echo $produto[0]['titulo_produto']; ?>"
-        width="200" height="150"
-    >
-</figure>
-<section>
-    <h4>R$ <?php echo formatar_preco($produto[0]['preco']); ?></h4>
-    <p>Quantidade disponível: <?php echo $produto[0]['quantidade_estoque']; ?></p>
-</section>
-<section>
-    <h2>Descrição do Produto: </h2>
-    <pre><?php echo $produto[0]['descricao']; ?></pre>
-</section>
+    <form class="col-12" action="" method="post">
+        
+        <!-- Não modifique o "value" do input abaixo, pois ele é necessário para a validação! -->
+        <input class="btn btn-danger" type="submit" name="deletar_produto" value="Excluir Produto">
 
-<form action="" method="post">
-    
-    <!-- Não modifique o "value" do input abaixo, pois ele é necessário para a validação! -->
-    <input type="submit" name="deletar_produto" value="Excluir Produto">
-
-    <input type="hidden" name="id_produto" value="<?php echo limpeza($_GET['id_produto']); ?>">
-    <a href="?link=my_products">Cancelar</a>
-</form>
+        <input type="hidden" name="id_produto" value="<?php echo limpeza($_GET['id_produto']); ?>">
+        <a class="btn btn-info" href="?link=my_products">Cancelar</a>
+    </form>

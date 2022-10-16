@@ -47,7 +47,7 @@
     } ?>
         <div class="container-fluid col-12">
             <p>Total: <strong>R$ <?php echo formatar_preco($preco_total); ?></strong></p>
-            <input type="submit" name="submit" value="Confirmar Compra">
+            <input class="btn btn-success" type="submit" name="submit" value="Confirmar Compra">
             <a href="">Cancelar Compra</a>
         </div>
 

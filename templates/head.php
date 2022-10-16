@@ -1,5 +1,5 @@
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="author" content="Pedro Luiz">
     <meta name="description" content="Página de cadastro de conta na Market Simulation">
 

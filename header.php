@@ -14,6 +14,7 @@
                 <?php }
                 else {
                     ?>
+                    <li class="nav-item"><a class="nav-link" href="account.php?link=carrinho">Carrinho</a></li>
                     <li class="nav-item"><a class="nav-link" href="account.php">Minha Conta</a></li>
                     <li class="nav-item"><a class="nav-link" href="sair.php">Sair</a></li>
                 <?php

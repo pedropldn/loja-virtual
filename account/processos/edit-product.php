@@ -3,7 +3,7 @@
     // Busca o produto no DB, pelo "id_produto".
     $produto = buscar_produto();
 
-    if ($produto[0]['id_user_vendedor'] !== (int)$_SESSION['id_user']){
+    if ((int)$produto[0]['id_user_vendedor'] !== (int)$_SESSION['id_user']){
         header("Location: 404.php");
     }
     else {

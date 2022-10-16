@@ -94,8 +94,8 @@
 
 
     if (count($produtos) === 0){ ?>
-
-        <h1>Seu carrinho está vazio!</h1>
+        <div class="container col-12 col-md-9 col-lg-10">
+        <h1 class="text-center">Seu carrinho está vazio!</h1>
     
     <?php
     }

@@ -17,7 +17,7 @@
     </div>
 
     
-    <form id="info-product" method="post" enctype="multipart/form-data">
+    <form id="info-product" action="" method="post" enctype="multipart/form-data">
 
         
     

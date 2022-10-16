@@ -80,7 +80,7 @@
                     <!-- Produz a mensagem de "valor inválido" durante a validação da quantidade -->
                     <label><?php echo $msg_quant; ?></label><br>
 
-                    <input type="submit" name="submit" value="Comprar">
+                    <input class="btn btn-success" type="submit" name="submit" value="Comprar">
                 </form> 
             </div>
             <figure class="col-12 col-md-6">
@@ -103,7 +103,7 @@
                 </section>
                 <form method="post" action="account/processos/confirmar-compra.php">
                     <label>Você vai comprar <strong><?php echo $quant; ?></strong> unidades</label>
-                    <input type="submit" name="submit" value="Confirmar Compra">
+                    <input class="btn btn-success" type="submit" name="submit" value="Confirmar Compra">
 
                     <!-- GUARDA O ID E A QUANTIDADE DE PRODUTOS À SEREM COMPRADOS -->
                     <input type="hidden" name="quantidade_comprada" value="<?php echo $quant; ?>">

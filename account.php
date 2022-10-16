@@ -3,6 +3,9 @@
     require "lib/funcoes.php";
     session_start();
 
+    // DOMINIO
+    $domain = "https://programadorpedroluiz.epizy.com/";
+
     // verifica se o usuário está logado. Se não estivar, manda ele pra página de login.
     if (!isset($_SESSION['id_user'])){
         session_unset();
@@ -36,10 +39,10 @@
 <?php require_once "templates/head.php"; ?>
 <body>
     <!-- IMPORTA O CABEÇALHO PADRÃO DO SITE -->
-    <?php require "header.php" ?>
+    <?php require_once "header.php"; ?>
 
     <main class="container row col-12">
-        <?php require "account/account-navigation.php"; ?>
+        <?php require_once "account/account-navigation.php"; ?>
         <?php
             
             // bloco switch que faz a inserção da página específica
@@ -52,7 +55,7 @@
                     break;
                 case "edit":
                 case "vender":
-                    require "account/vender.php";
+                    require "account/vender.php";                 
                     break;
                 case "delete":
                     require "account/delete-product.php";

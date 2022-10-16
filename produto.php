@@ -31,9 +31,10 @@
                 <p>Vendedor: <?php echo $produto[0]['nome']; ?></p>
 
                 <?php 
+                
                 if (isset($_SESSION['id_user'])){
                     
-                    if ( (int)$_SESSION['id_user'] !== $produto[0]['id_user_vendedor'] ){ 
+                    if ( (int)$_SESSION['id_user'] !== (int)$produto[0]['id_user_vendedor'] ){ 
                         require_once "templates/botoes-comprar.php";
                     }
                     else { ?>
@@ -56,9 +57,9 @@
                     style="max-width: 100%;"
                 >
             </figure>
-            <div class="container">
+            <div class="container col-12" style="white-space: normal;">
                 <h2>Descrição do Produto: </h2>
-                <pre><?php echo $produto[0]['descricao']; ?></pre>
+                <div><?php echo $produto[0]['descricao']; ?></div>
             </div>
         </section>
     </main>

@@ -26,14 +26,28 @@
 
 ?>
 <section id="products-list" class="container col-12 col-md-9 col-lg-10">
-
-    <h1>Produtos Que você está Vendendo:</h1>
-
     <!-- AQUI COMEÇA O PHP QUE VAI PROCESSAR E FORMATAR A LISTA DE PRODUTOS -->
-    <?php 
-        if ($stat !== false){
+    <?php
+    
+    if ($stat !== false){
 
-            $produtos = $stat->fetchAll();
+        $produtos = $stat->fetchAll();
+    
+        if (count($produtos) === 0){ ?>
+
+            <h1>Você não possui nenhum produto à venda</h1>
+            <p class="text-center"><a href="account.php?link=vender">Quero vender um produto!</a></p>
+
+        <?php
+        }
+        elseif (count($produtos) !== 0){ ?>
+            
+            <h1>Produtos Que você está Vendendo:</h1>
+        
+        <?php
+        }
+   
+        
 
             foreach ($produtos as $key => $value){
                 

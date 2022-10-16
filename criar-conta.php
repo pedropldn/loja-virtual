@@ -23,7 +23,7 @@
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === "POST"){
-        echo "Pimba!!!";
+        
         // Verifica se todos as 4 informações foram submetidas e já faz a limpeza contra XSS.
         if (isset($_POST["nome"])){
             $infos["nome"] = limpeza($_POST["nome"]);
@@ -46,7 +46,7 @@
         elseif (!preg_match("@(\s){1,}@", $infos["nome"])){
             $msg_erros["nome"] = "Digite seu nome COMPLETO.";
         }
-        elseif (preg_match("@[^a-zA-Z\s]@", $infos["nome"])){
+        elseif (preg_match("@[^a-zA-ZÀ-ú\s]@", $infos["nome"])){
             $msg_erros["nome"] = "Digite apenas letras e espaços!";
         }
         else {
