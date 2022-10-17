@@ -34,16 +34,19 @@ class SearchProducts {
     // a página 2 retorna os produtos do índice 10 até o 19... e assim por diante.
     public function getPage(int $page_number=1){
 
-        $minIndex = ($page_number * 10) - 10;   // Calcula o índice MÍNIMO do produto de acordo com a página.
-        $maxIndex = ($page_number * 10) - 1;    // Calcula o índice MÁXIMO do produto de acordo com a página.
+        $minIndex = ($page_number * 12) - 12;   // Calcula o índice MÍNIMO do produto de acordo com a página.
+        $maxIndex = ($page_number * 12) - 12;    // Calcula o índice MÁXIMO do produto de acordo com a página.
 
         // Se nenhum produto foi encontrado ou se o índice mínimo do produto for menor que o total
         // de produtos, ou se o número da página for "0", retorna "false".
-        if ($this->numberProductsReturned === 0 ||
-            $minIndex > $this->numberProductsReturned ||
-            $page_number === 0){
+        if ($this->numberProductsReturned === 0){
             return false;
         }
+
+        if ($minIndex > $this->numberProductsReturned ||
+            $page_number === 0){
+                header("Location: 404.php");
+            }
 
         return array_slice(
             $this->returnedProducts,
@@ -52,6 +55,13 @@ class SearchProducts {
         );
 
     }
+
+    // Essa função retorna o total de páginas na qual serão mostrados todos os produtos.
+    public function totalPages(){
+
+        return ceil($this->numberProductsReturned / 12);
+
+    } 
 
 }
 

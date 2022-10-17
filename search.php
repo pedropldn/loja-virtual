@@ -50,7 +50,7 @@
             <?php
             }
             else {
-
+                
                 foreach ($produtos as $p){ ?>
 
                     <div class="css-container-product col-12 col-sm-6 col-md-4 col-lg-3">
@@ -72,6 +72,10 @@
                 }
             } ?>
         </section>
+        
+        <!-- CONSTROI O MENU DE PAGINAÇÃO -->
+        <?php require_once "templates/pagination.php"; ?>
+
     </main>
 
     <!-- IMPORTA O RODAPÉ PADRÃO DO SITE -->

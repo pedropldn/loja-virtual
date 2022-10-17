@@ -2,10 +2,10 @@
 
 // Inicia uma conexão com o banco de dados e retorna o objeto PDO.
 function conexao_db(){
-    $servername_db = "sql106.epizy.com:3306";
-    $username_db = "epiz_32429970";
-    $password_db = "whatcanisay17";
-    $database_db = "epiz_32429970_loja_virtual";
+    $servername_db = "localhost";
+    $username_db = "pldnmasteradmin";
+    $password_db = "whatwhatcanido";
+    $database_db = "lojavirtual";
 
     $conn = new PDO("mysql:host={$servername_db};dbname={$database_db}", $username_db, $password_db);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);

@@ -1,20 +1,29 @@
 <?php
     session_start();
 
-    require "lib/funcoes.php";
+    require_once "lib/funcoes.php";
+    require_once "lib/SearchProducts.php";
 
-    try {
+    // Busca os produtos que serão mostrados na index.php
+    $lista_de_produtos = new SearchProducts("");
 
-        // Busca os produtos no DB.
-        $conn = conexao_db();
-        $consulta_db = $conn->query("select id_produto, titulo_produto, preco
-                                    from produtos_a_venda
-                                    limit 10;");
-        $produtos = $consulta_db->fetchAll();
+    if (isset($_GET['page'])){
+
+        if (is_numeric($_GET['page'])){
+
+            $page_number = (int)limpeza($_GET['page']);
+            $produtos = $lista_de_produtos->getPage($page_number);
+
+        }
+        else {
+            header("Location: 404.php");
+        }
 
     }
-    catch (PDOException $e){
-        echo db_erro($e);
+    else {
+        
+        $produtos = $lista_de_produtos->getPage(1);
+
     }
 
 ?>
@@ -60,6 +69,10 @@
                 }
             ?>
         </section>
+
+        <!-- CONSTROI O MENU DE PAGINAÇÃO -->
+        <?php require_once "templates/pagination.php"; ?>
+
     </main>
 
     <!-- IMPORTA O RODAPÉ PADRÃO DO SITE -->
