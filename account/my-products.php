@@ -1,33 +1,23 @@
 <?php 
     
     // Busca os produtos à venda do usuário no DB.
-    try {
+    $id_user = limpeza($_SESSION['id_user']);
+    $conn = conexao_db();
+    $stat = $conn->query("
+        select 
+            titulo_produto, 
+            id_produto, 
+            preco
+        from produtos_a_venda 
+        where id_user_vendedor={$id_user}
+    ");
 
-        $id_user = limpeza($_SESSION['id_user']);
-        $conn = conexao_db();
-        $stat = $conn->query("
-            select 
-                produtos_a_venda.titulo_produto, 
-                produtos_a_venda.id_produto, 
-                produtos_a_venda.preco, 
-                imagens_produtos.imagem_produto, 
-                imagens_produtos.tipo_imagem 
-            from produtos_a_venda 
-            cross join imagens_produtos 
-            where 
-                produtos_a_venda.id_user_vendedor={$id_user} and 
-                produtos_a_venda.id_produto=imagens_produtos.id_produto;
-        ");
-
-    }
-    catch (PDOException $e){
-        db_erro($e);
-    }
+    
 
 ?>
 <section id="products-list" class="container col-12 col-md-9 col-lg-10">
-    <!-- AQUI COMEÇA O PHP QUE VAI PROCESSAR E FORMATAR A LISTA DE PRODUTOS -->
-    <?php
+    
+    <?php     // AQUI COMEÇA O PHP QUE VAI PROCESSAR E FORMATAR A LISTA DE PRODUTOS
     
     if ($stat !== false){
 

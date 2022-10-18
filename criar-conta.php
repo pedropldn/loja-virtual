@@ -1,5 +1,6 @@
 <?php
-    require "lib/funcoes.php";
+    require_once "lib/funcoes.php";
+    require_once "lib/CreateUser.php";
 
     // A seguinte variável será usada como a página pra onde o usuário será direcionado se o cadastro for bem sucedido.
     $pag_sucesso = "usuario-cadastrado.php";
@@ -82,41 +83,22 @@
 
         if ($validacao === 0){
             
-            try {
-                // INICIA A CONEXÃO COM O BANCO DE DADOS:
-                $conn = conexao_db();
+            $user = new CreateUser(
+                $infos['nome'],
+                $infos['email'],
+                $infos['senha']
+            );
 
-                // Procura por um email já existente dentro do resultado da busca SQL;
-                $check_email = "select email from usuarios
-                                where email=\"{$infos['email']}\";";
-                $res = ($conn->query($check_email))->fetchAll();
-                
-                if (count($res) > 0){
-                    $msg_erros["email_ja_existente"] = "Esse e-email já está cadastrado! Tente outro!";
-                }
-                else {
-                    
-                    // Insere os dados do novo usuário no banco de dados.
-                    // A ordem dos itens passados como argumento para o metodo execute() não pode ser alterada.
-                    $cadastra_no_db = "insert into usuarios (email, nome, senha) 
-                                        values (?, ?, ?)";
-                    $pdostat = $conn->prepare($cadastra_no_db);
-                    $pdostat->execute([
-                        $infos['email'],
-                        $infos['nome'],
-                        $infos['senha'],
-                    ]);
+            if ($user->success()){
 
-                    // Se deu tudo certo no cadastro do novo usuário, envia ele para a página d eusuário cadastrado.
-                    
-                    header("Location: {$pag_sucesso}");
-
-                }
-
+                // Se deu tudo certo no cadastro do novo usuário, envia ele para a "usuário-cadastrado.php".
+                header("Location: {$pag_sucesso}");
 
             }
-            catch (PDOException $e){
-                echo "<h1 style='color: red; background yellow;'>" . $e->getMessage() . "</h1>";
+            else {
+
+                $msg_erros["email_ja_existente"] = $user->getErrorMessage();
+                
             }
 
         }

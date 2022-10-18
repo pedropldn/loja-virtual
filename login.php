@@ -8,7 +8,9 @@
     session_unset();
     session_destroy();
 
-    require "lib/funcoes.php";
+    require_once "lib/funcoes.php";
+    require_once "lib/GetUser.php";
+
     $infos = [
         "email" => "",
         "senha" => ""
@@ -28,34 +30,32 @@
             $infos["senha"] = limpeza($_POST["senha"]);
         }
 
+        // ===================================================
+
         $msg_erros['email'] = validacao_email($infos['email']);
-        echo $msg_erros['email'];
+        
         // Se o email for valido, procura ele no banco de dados.
         if ($msg_erros['email'] === ''){
+                           
+            $user = new GetUser($infos['email']);
             
-            try {
+            
+            if (!$user->success()){
+                $msg_erros["email"] = $user->getErrorMessage();
+            }
+            else {
+
+                if ($user->getPassword() !== $infos["senha"]) {
                 
-                // Inicia a conexão com o DB.
-                $conn = conexao_db();
-                
-                // Verifica se o email digitado existe na tabela de usuarios.
-                $check_email = "select email, senha, id_user, nome from usuarios
-                                where email=\"{$infos['email']}\";";
-                $pdostat = $conn->query($check_email);
-                $res = $pdostat->fetchAll();
-                
-                
-                if (count($res) === 0){
-                    $msg_erros["email"] = "Esse e-email não possui conta cadastrada!";
-                }
-                elseif ($infos['senha'] !== $res[0]['senha']) {
                     $msg_erros['senha'] = "Senha incorreta!!!";
+                
                 }
-                else {
+                else{
+
                     // Inicia um session para este usuário.
                     session_start();
-                    $_SESSION['id_user'] = $res[0]['id_user'];
-                    $_SESSION['nome'] = $res[0]['nome'];
+                    $_SESSION['id_user'] = $user->getIdUser();
+                    $_SESSION['nome'] = $user->getName();
 
                     if (isset($_POST['comprar'])){
 
@@ -68,14 +68,14 @@
                         header("Location: account.php");
                         
                     }
+
                 }
 
             }
-            catch (PDOException $e){
-                echo "<h1 style='color: red; background yellow;'>" . $e->getMessage() . "</h1>";
-            }
 
         }
+
+        // ================
 
     }
 ?>
@@ -97,7 +97,7 @@
                 <div class="col-12 col-md-8">
                     <input type="email" id="email" name="email" required placeholder="silvasauro@gmail.com"
                             value="<?php echo $infos['email']; ?>">
-                    <label>
+                    <label class="text-danger">
                         <?php echo $msg_erros['email'] ?>
                     </label>
                 </div>
@@ -110,7 +110,7 @@
 
                 <div class="col-12 col-md-8">
                     <input type="password" id="senha" name="senha" required placeholder="Sua senha aqui...">
-                    <label>
+                    <label class="text-danger">
                         <?php echo $msg_erros['senha'] ?>
                     </label>
                 </div>

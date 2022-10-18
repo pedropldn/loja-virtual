@@ -18,10 +18,10 @@ function limpeza($a){
 
 // Cria um id para o produto e retorna esse id em valor string.
 function cria_id_produto($id_user){
-    return $id_user . "_" . (time());
+    return (string)( $id_user . "_" . (time()) );
 }
 
-// Essa função retorna a mensagem de erro, ou então uma string em caso de validação bem sucedida.
+// Essa função retorna a mensagem de erro, ou então uma string vazia em caso de validação bem sucedida.
 function validacao_email( $email="" ){
     if ($email == ""){
         return "Obrigatório preencher este campo!";
@@ -63,31 +63,24 @@ function buscar_produto( $id_produto = null ){
 
     $id_produto = limpeza($id_produto);
 
-    try{
+    // Busca os dados do produto no DB. (stat = PDOStatement).
+    $conn = conexao_db();
+    $stat = $conn->query("
+        select 
+            u.nome, 
+            p.id_user_vendedor, 
+            p.id_produto, 
+            p.titulo_produto, 
+            p.preco, 
+            p.descricao, 
+            p.quantidade_estoque
+        from produtos_a_venda as p
+        inner join usuarios as u on p.id_user_vendedor=u.id_user 
+        where id_produto='{$id_produto}';
+    ");
 
-        // Busca os dados do produto no DB. (stat = PDOStatement).
-        $conn = conexao_db();
-        $stat = $conn->query("
-            select 
-                u.nome, 
-                p.id_user_vendedor, 
-                p.id_produto, 
-                p.titulo_produto, 
-                p.preco, 
-                p.descricao, 
-                p.quantidade_estoque
-            from produtos_a_venda as p
-            inner join usuarios as u on p.id_user_vendedor=u.id_user 
-            where id_produto='{$id_produto}';
-        ");
+    return $stat->fetchAll();
 
-        return $stat->fetchAll();
-
-    }
-    catch (PDOException $e){
-        // função da lib "funcoes.php"
-        db_erro($e);
-    }
 
 }
 
@@ -249,7 +242,7 @@ function busca_carrinho_usuario($id_user){
             values ({$id_user}, '{$json_produto}');
         ");
 
-        $carrinho = ["produtos => []"];
+        $carrinho = ["produtos" => []];
 
     }  
     elseif (count($consulta) !== 0){

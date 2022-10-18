@@ -87,65 +87,68 @@
             }
             
             if ($validacao_produto === 0){
-
-                try {
                     
-                    // Inicia a conexão com o DB.
-                    $conn = conexao_db();
+                // Inicia a conexão com o DB.
+                $conn = conexao_db();
 
-                    // Verifica no DB se o id_produto condiz com o usuario vendedor dono do produto.
-                    $consulta = $conn->query("
-                        select id_produto, id_user_vendedor from produtos_a_venda
-                        where id_produto='{$produto[0]['id_produto']}' and id_user_vendedor={$_SESSION['id_user']};
-                        ")->fetchAll();
+                // Verifica no DB se o id_produto condiz com o usuario vendedor dono do produto.
+                $consulta = $conn->query("
+                    select id_produto, id_user_vendedor from produtos_a_venda
+                    where id_produto='{$produto[0]['id_produto']}' and id_user_vendedor={$_SESSION['id_user']};
+                    ")->fetchAll();
 
-                    if (count($consulta) === 0){
+                if (count($consulta) === 0){
 
-                        header("Location: 404.php");
+                    header("Location: 404.php");
 
-                    }
+                }
 
-                    // Inicia uma transação explicita.
-                    $conn->beginTransaction();
+                // Inicia uma transação explicita.
+                $conn->beginTransaction();
 
-                    // Prepara as atualizações à serem feitas, excluindo a nova imagem.
-                    $stat = $conn->prepare("
+                // Prepara as atualizações à serem feitas, excluindo a nova imagem.
+                $stat = $conn->prepare("
+                    update produtos_a_venda
+                    set titulo_produto=:titulo_produto,
+                        quantidade_estoque=:quantidade_estoque,
+                        preco=:preco,
+                        descricao=:descricao
+                    where id_produto='{$produto[0]['id_produto']}' and id_user_vendedor={$_SESSION['id_user']};
+                ");
+
+                $stat->bindParam(":titulo_produto", $dados_produto['titulo_produto']);
+                $stat->bindParam(":quantidade_estoque", $dados_produto['quantidade']);
+                $stat->bindParam(":preco", $dados_produto['preco']);
+                $stat->bindParam(":descricao", $dados_produto['descricao']);
+
+                $success1 = $stat->execute();
+                $success2 = true;
+
+                // Verifica se existe imagem à ser atualizada no DB.
+                if ($nova_img != false){
+
+                    $stat_2 = $conn->prepare("
                         update produtos_a_venda
-                        set titulo_produto=:titulo_produto,
-                            quantidade_estoque=:quantidade_estoque,
-                            preco=:preco,
-                            descricao=:descricao
-                        where id_produto='{$produto[0]['id_produto']}' and id_user_vendedor={$_SESSION['id_user']};
+                        set tipo_imagem=:tipo_imagem,
+                            imagem_produto=:nova_img
+                        where id_produto={$produto[0]['id_produto']} and id_user_vendedor={$_SESSION['id_user']};
                     ");
+                    
+                    $stat_2->bindParam(":tipo_imagem", $tipo_imagem);
+                    $stat_2->bindParam(":nova_img", $nova_img, PDO::PARAM_LOB);
+                    $success2 = $stat_2->execute();
 
-                    $stat->bindParam(":titulo_produto", $dados_produto['titulo_produto']);
-                    $stat->bindParam(":quantidade_estoque", $dados_produto['quantidade']);
-                    $stat->bindParam(":preco", $dados_produto['preco']);
-                    $stat->bindParam(":descricao", $dados_produto['descricao']);
-                    $stat->execute();
+                }
 
-                    // Verifica se existe imagem à ser atualizada no DB.
-                    if ($nova_img != false){
-
-                        $stat_2 = $conn->prepare("
-                            update produtos_a_venda
-                            set tipo_imagem=:tipo_imagem,
-                                imagem_produto=:nova_img
-                            where id_produto={$produto[0]['id_produto']} and id_user_vendedor={$_SESSION['id_user']};
-                        ");
-                        
-                        $stat_2->bindParam(":tipo_imagem", $tipo_imagem);
-                        $stat_2->bindParam(":nova_img", $nova_img, PDO::PARAM_LOB);
-                        $stat_2->execute();
-
-                    }
-
+                // Se der tudo certo nas alterações ao DB, salva as alterações. 
+                // Caso contrário, desfaz as alterações sem salvá-las.
+                if ($success1 === true && $success2 === true){
                     $conn->commit();
                     header("Location: account.php?link=my_products");
-    
                 }
-                catch (PDOException $e){
-                    db_erro($e);
+                else {
+                    $conn->rollBack();
+                    header("Location: 404.php");
                 }
 
             }
