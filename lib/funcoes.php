@@ -16,11 +16,6 @@ function limpeza($a){
     return (htmlspecialchars(stripslashes(trim($a))));
 }
 
-// Cria um id para o produto e retorna esse id em valor string.
-function cria_id_produto($id_user){
-    return (string)( $id_user . "_" . (time()) );
-}
-
 // Essa função retorna a mensagem de erro, ou então uma string vazia em caso de validação bem sucedida.
 function validacao_email( $email="" ){
     if ($email == ""){
@@ -80,108 +75,6 @@ function buscar_produto( $id_produto = null ){
     ");
 
     return $stat->fetchAll();
-
-
-}
-
-// Essa função valida o upload da imagem, porém ela depende da variável: $msgs_erros
-function validacao_imagem(&$msgs_erros){
-
-    $tipo_imagem = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
-    
-    // Contador para validação da imagem recebida.
-    $validacao_imagem = 0;
-
-    switch ($tipo_imagem){
-        case "png":
-        case "jpg":
-        case "jpeg": 
-        case "gif":
-        case "webp":
-            $validacao_imagem++;
-            break;
-        default:
-            $msgs_erros['imagem'] = "Formato de imagem inválido!";
-    }
-
-    // Faz a leitura do arquivo de imagem e salva o conteúdo dentro de uma variável
-    // para podermos salvar a imagem no DB.
-    if ($validacao_imagem === 1){
-
-        // Faz a tentativa de abrir o conteúdo da imagem.
-        $arquivo_imagem = fopen($_FILES['imagem']['tmp_name'], "rb");
-        if($arquivo_imagem !== false){
-
-            // Se o PHP conseguiu abrir a imagem valida o tamanho dela.
-            if ($_FILES['imagem']['size'] < 800000 && 
-            $_FILES['imagem']['size'] > 0){
-                return $arquivo_imagem;
-            }
-            else {
-                $msgs_erros['imagem'] = "A imagem deve ser de máximo 1Mb.";
-            }
-
-        }
-        else {
-            $msgs_erros['imagem'] = "Um erro aconteceu enquanto tentavamos salvar a imagem. Tente novamente.";
-        }
-
-    }
-
-    // Se o código chegar aqui é porque a imagem não foi validada corretamente.
-    return false;
-
-}
-
-// Essa funcao depende dos arrays: $dados_produto e $msgs_erros
-function validacao_preco(&$dados_produto, &$msgs_erros){
-
-    // Validação do preço do produto.
-    if (preg_match("@[^0-9,.]@", $dados_produto['preco'])){
-        $msgs_erros['preco'] = "Digite apenas números e virgula/ponto (para digitar centavos!)";
-    }
-    elseif (preg_match("@^[0-9]{1,5}[\.,][0-9]{1,2}$@", $dados_produto['preco'])){
-        
-        // Substitui virgula por ponto antes de validar e converter.
-        $preco = str_replace(",", ".", $dados_produto['preco']);
-
-        // Tenta converter o preço para um valor numérico.
-        if (is_numeric($preco)){
-            $dados_produto['preco'] = (float)$preco;
-            return TRUE;
-        }
-        else {
-            $msgs_erros['preco'] = "Esse preço não pode ser validado!";
-        }
-
-    }
-    else {
-        $msgs_erros['preco'] = "Preço inválido! Digite um preço entre R$ 0,01 e 99999,99! Use apenas 1 virgula ou ponto!";
-    }
-
-    // Se chegar aqui é porque não passou na validação.
-    return FALSE;
-
-}
-
-function validacao_quantidade(&$dados_produto, &$msgs_erros){
-    // Validação da quantidade de produtos disponível no estoque.
-    $dados_produto['quantidade'] = (int)$dados_produto['quantidade'];
-
-    if (($dados_produto['quantidade'] != 0) && 
-        (!is_nan($dados_produto['quantidade'])) &&
-        ($dados_produto['quantidade'] > 0) &&
-        ($dados_produto['quantidade'] <= 99)){
-        
-        return TRUE;
-        
-    }
-    elseif (!empty($dados_produto['quantidade'])){
-        $msgs_erros['quantidade'] = "A quantidade em estoque precisa ser um número inteiro entre 1 e 99";
-    }
-
-    // Se chegar aqui, validação falhou.
-    return FALSE;
 
 }
 

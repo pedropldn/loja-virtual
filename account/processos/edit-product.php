@@ -1,30 +1,32 @@
 <?php
 
-    // Busca o produto no DB, pelo "id_produto".
-    $produto = buscar_produto();
+    require_once "lib/EditProduct.php";
 
-    if ((int)$produto[0]['id_user_vendedor'] !== (int)$_SESSION['id_user']){
+    // Busca o produto no DB, pelo "id_produto".
+    $product = new EditProduct(
+        limpeza($_GET['id_produto'])
+    );
+
+    if ($product->getSellerUserId() !== (int)$_SESSION['id_user']){
         header("Location: 404.php");
     }
     else {
 
+        // Adiciona o id_produto ao array dos dados.
+        $dados_produto['id_produto'] = $product->getProductId();
+
         if ($_SERVER['REQUEST_METHOD'] === "GET"){
 
             // Atribui os dados do produto no DB à cada campo correspondente.
-            $dados_produto['titulo_produto'] = $produto[0]['titulo_produto'];
-            $dados_produto['quantidade'] = $produto[0]['quantidade_estoque'];
-            $dados_produto['preco'] = formatar_preco($produto[0]['preco']);
-            $dados_produto['descricao'] = $produto[0]['descricao'];
-            $dados_produto['id_produto'] = $produto[0]['id_produto'];
+            $dados_produto['titulo_produto'] = $product->getProductTitle();
+            $dados_produto['quantidade'] = $product->getQuantityInStock();
+            $dados_produto['preco'] = formatar_preco($product->getPrice());
+            $dados_produto['descricao'] = $product->getDescription();
         
         }
         elseif ($_SERVER['REQUEST_METHOD'] === "POST"){
 
-            // Adiciona o id_produto ao array dos dados.
-            $dados_produto['id_produto'] = $produto[0]['id_produto'];
-
             // Essa variável é o countador para saber se todos os dados do produto são válidos.
-            $validacao_produto = 6;
 
             // Loop para limpeza e verificação de campos vazios recebidos pelo metodo post.
             foreach ($dados_produto as $key => $value){
@@ -36,120 +38,41 @@
                 }
             }
 
-            // Validação do título do produto.
-            if (strlen($dados_produto['titulo_produto']) > 80){
-                $msgs_erros['titulo_produto'] = "O título do produto NÃO pode ser maior que 80 caracteres!";
-            }
-            elseif ((!empty($dados_produto['titulo_produto'])) && strlen($dados_produto['titulo_produto']) <= 80){
-                $validacao_produto--;
-            }
+            $msgs_erros['titulo_produto'] = $product->setProductTitle($dados_produto['titulo_produto']);
+            $msgs_erros['quantidade'] = $product->setQuantityInStock($dados_produto['quantidade']);
+            $msgs_erros['preco'] = $product->setPrice($dados_produto['preco']);
+            $msgs_erros['descricao'] = $product->setDescription($dados_produto['descricao']);
 
-            // Validação da quantidade de produtos disponível no estoque.
-            if (validacao_quantidade($dados_produto, $msgs_erros)){
-                $validacao_produto--;
-            }
+            // Verifica se uma nova imagem foi enviada.
+            // Se não foi, mantém a mesma no banco de dados. Caso contrário, chama a função
+            // que irá preparar a aplicação da nova imagem ao banco de dados. 
+            if ( empty($_FILES['imagem']['tmp_name']) ){
 
-            if (validacao_preco($dados_produto, $msgs_erros)){
-                $validacao_produto--;
-            }
-
-            // Validação da descrição do produto.
-            if (!empty($dados_produto['descricao']) && (strlen($dados_produto['descricao']) <= 2000)){
-                $validacao_produto--;
-            }
-
-            // Validação da imagem de upload do produto!
-            // A função validacao_imagem() depende do array $msg_erros pra funcionar, caso contrário dará erro.
-            // Se der tudo certo na validacao ela retornará true;
-            $nova_img = false;
-
-            // Primeiro verifica se não foi feito nenhum upload. Se não houver upload, não iremos mudar a imagem do produto.
-            if ($_FILES['imagem']['tmp_name'] === ""){
-
-                $validacao_produto--;
+                $msgs_erros['imagem'] = $product->setImage( NULL );
 
             }
             elseif (isset($_FILES['imagem'])){
+                
+                $msgs_erros['imagem'] = $product->setImage("imagem");
 
-                $arquivo_imagem = validacao_imagem($msgs_erros);
-
-                if ($arquivo_imagem){
-                    $tipo_imagem = strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
-                    $nova_img = $arquivo_imagem;
-                    $validacao_produto--;
-                    var_dump($arquivo_imagem);
-                }
             }
 
-            // Verifica se o usuario está logado, para evitar problemas na hora de aplicar os dados so DB.
-            if (isset($_SESSION['id_user'])){
-                $validacao_produto--;
+            // Verifica se o usuario está logado, para evitar problemas na hora de aplicar os dados no banco de dados.
+            if (!isset($_SESSION['id_user'])){
+
+                header("Location: login.php");
+
             }
-            
-            if ($validacao_produto === 0){
+        
+            if ($product->save()){
                     
-                // Inicia a conexão com o DB.
-                $conn = conexao_db();
+                header("Location: account.php?link=my_products");
 
-                // Verifica no DB se o id_produto condiz com o usuario vendedor dono do produto.
-                $consulta = $conn->query("
-                    select id_produto, id_user_vendedor from produtos_a_venda
-                    where id_produto='{$produto[0]['id_produto']}' and id_user_vendedor={$_SESSION['id_user']};
-                    ")->fetchAll();
+            }
+            else {
 
-                if (count($consulta) === 0){
-
-                    header("Location: 404.php");
-
-                }
-
-                // Inicia uma transação explicita.
-                $conn->beginTransaction();
-
-                // Prepara as atualizações à serem feitas, excluindo a nova imagem.
-                $stat = $conn->prepare("
-                    update produtos_a_venda
-                    set titulo_produto=:titulo_produto,
-                        quantidade_estoque=:quantidade_estoque,
-                        preco=:preco,
-                        descricao=:descricao
-                    where id_produto='{$produto[0]['id_produto']}' and id_user_vendedor={$_SESSION['id_user']};
-                ");
-
-                $stat->bindParam(":titulo_produto", $dados_produto['titulo_produto']);
-                $stat->bindParam(":quantidade_estoque", $dados_produto['quantidade']);
-                $stat->bindParam(":preco", $dados_produto['preco']);
-                $stat->bindParam(":descricao", $dados_produto['descricao']);
-
-                $success1 = $stat->execute();
-                $success2 = true;
-
-                // Verifica se existe imagem à ser atualizada no DB.
-                if ($nova_img != false){
-
-                    $stat_2 = $conn->prepare("
-                        update produtos_a_venda
-                        set tipo_imagem=:tipo_imagem,
-                            imagem_produto=:nova_img
-                        where id_produto={$produto[0]['id_produto']} and id_user_vendedor={$_SESSION['id_user']};
-                    ");
-                    
-                    $stat_2->bindParam(":tipo_imagem", $tipo_imagem);
-                    $stat_2->bindParam(":nova_img", $nova_img, PDO::PARAM_LOB);
-                    $success2 = $stat_2->execute();
-
-                }
-
-                // Se der tudo certo nas alterações ao DB, salva as alterações. 
-                // Caso contrário, desfaz as alterações sem salvá-las.
-                if ($success1 === true && $success2 === true){
-                    $conn->commit();
-                    header("Location: account.php?link=my_products");
-                }
-                else {
-                    $conn->rollBack();
-                    header("Location: 404.php");
-                }
+                throw new Exception("Erro na edição do produto! Contate a equipe de programação");
+                exit;
 
             }
 
