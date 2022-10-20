@@ -45,6 +45,7 @@
                     <div class="col-12 col-md-3 css-image">
                         <img src="imagem-produto.php?id_produto=<?php echo $value['id_produto']; ?>" 
                             alt="<?php echo $value['titulo_produto']; ?>"
+                            style="max-width: 100%; max-height: 100%;"
                         >
                     </div>
                 </div>

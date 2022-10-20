@@ -12,7 +12,7 @@
             $this->sellerUserId = $id_user;
             
             // Constrói o "id_produto" automaticamente.
-            $this->productId = cria_id_produto($id_user);
+            $this->productId = $id_user . "_" . time();
 
         }
 
@@ -26,7 +26,7 @@
             $id = ( limpeza($_SESSION['id_user']) . "_" . (time()) );
 
             // Prepara o SQL para a aplicação dos dados no banco.
-            $stat = $conn->prepare("
+            $stat = $this->conn->prepare("
                 insert into produtos_a_venda (
                     id_user_vendedor, titulo_produto, quantidade_estoque, descricao, preco, id_produto
                 )
@@ -46,7 +46,7 @@
             $success1 = $stat->execute();
 
             // Adiciona as imagens ao DB imagens_produtos
-            $stat2 = $conn->prepare("
+            $stat2 = $this->conn->prepare("
                 insert into imagens_produtos (id_produto, imagem_produto, tipo_imagem)
                 values (:id_produto, :imagem_produto, :tipo_imagem);
             ");
