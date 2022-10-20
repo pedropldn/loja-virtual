@@ -1,16 +1,15 @@
 <?php
     
     session_start();
-    require "lib/funcoes.php";
+    require_once "lib/funcoes.php";
+    require_once "lib/GetProduct.php";
 
     if (isset($_GET['id_produto'])){
 
         // Busca produto no DB.
-        $produto = buscar_produto($_GET['id_produto']);
-
-        if (count($produto) === 0){
-            header("Location: 404.php");
-        }
+        $product = new GetProduct(
+            limpeza($_GET['id_produto'])
+        );
 
     }
 
@@ -25,16 +24,16 @@
     <main class="container">
         <section id="product" class="container row">
             <div class="col-12 col-md-6">
-                <h1><?php echo $produto[0]['titulo_produto'] ?></h1>
-                <h4>R$ <?php echo formatar_preco($produto[0]['preco']); ?></h4>
-                <p>Quantidade disponível: <?php echo $produto[0]['quantidade_estoque']; ?></p>
-                <p>Vendedor: <?php echo $produto[0]['nome']; ?></p>
+                <h1><?php echo $product->getProductTitle(); ?></h1>
+                <h4>R$ <?php echo formatar_preco($product->getPrice()); ?></h4>
+                <p>Quantidade disponível: <?php echo $product->getQuantityInStock(); ?></p>
+                <p>Vendedor: <?php echo $product->getSellerName(); ?></p>
 
                 <?php 
                 
                 if (isset($_SESSION['id_user'])){
                     
-                    if ( (int)$_SESSION['id_user'] !== (int)$produto[0]['id_user_vendedor'] ){ 
+                    if ( (int)$_SESSION['id_user'] !== (int)$product->getSellerUserId() ){ 
                         require_once "templates/botoes-comprar.php";
                     }
                     else { ?>
@@ -51,15 +50,15 @@
                 
             </div>
             <figure class="col-12 col-md-6">
-                <figcaption style="display: none;"><?php echo $produto[0]['titulo_produto']; ?></figcaption>
-                <img src="imagem-produto.php?id_produto=<?php echo $produto[0]['id_produto']; ?>"
-                    alt="<?php echo $produto[0]['titulo_produto']; ?>"
+                <figcaption style="display: none;"><?php echo $product->getProductTitle(); ?></figcaption>
+                <img src="imagem-produto.php?id_produto=<?php echo $product->getProductId(); ?>"
+                    alt="<?php echo $product->getProductTitle(); ?>"
                     style="max-width: 100%;"
                 >
             </figure>
             <div class="container col-12" style="white-space: normal;">
                 <h2>Descrição do Produto: </h2>
-                <div><?php echo $produto[0]['descricao']; ?></div>
+                <div><?php echo $product->getDescription(); ?></div>
             </div>
         </section>
     </main>

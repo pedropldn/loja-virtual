@@ -48,6 +48,7 @@ function db_erro($pdo_exception){
     echo "<h1 style='color: red; background: yellow;'>" . $pdo_exception->getMessage() . "</h1>";
 }
 
+/*
 function buscar_produto( $id_produto = null ){
 
     // Se não for passado nenhum argumento na função, usa o id_produto do $_GET para fazer a busca.
@@ -77,6 +78,7 @@ function buscar_produto( $id_produto = null ){
     return $stat->fetchAll();
 
 }
+*/
 
 // Essa função retorna o nome do usuário desejado através do argumento "id_user" que foi passado.
 function busca_usuario($id_user){

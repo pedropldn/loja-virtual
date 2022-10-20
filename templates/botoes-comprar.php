@@ -15,5 +15,5 @@
     }
 ?>
 
-<a class="btn btn-success" href="comprar.php?id_produto=<?php echo $produto[0]['id_produto']; ?>">Comprar</a>
-<a class="btn btn-warning" href="?id_produto=<?php echo $produto[0]['id_produto']; ?>&add_shop_cart=1">Adicionar ao Carrinho</a>
+<a class="btn btn-success" href="comprar.php?id_produto=<?php echo $product->getProductId(); ?>">Comprar</a>
+<a class="btn btn-warning" href="?id_produto=<?php echo $product->getProductId(); ?>&add_shop_cart=1">Adicionar ao Carrinho</a>
