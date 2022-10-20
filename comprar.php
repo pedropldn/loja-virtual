@@ -1,6 +1,8 @@
 <?php
 
-    require "lib/funcoes.php";
+    require_once "lib/funcoes.php";
+    require_once "lib/GetProduct.php";
+
 
     // Mensagem que serve pra dizer se o quantidade desejada é inválida.
     $msg_quant = "";
@@ -11,7 +13,7 @@
     session_start();
     if (isset($_GET['id_produto'])){
         
-        $id_produto = limpeza($_GET['id_produto']);
+        $productId = limpeza($_GET['id_produto']);
 
         if (!isset($_SESSION['id_user'])){
             header("Location: login.php?buy={$id_produto}");
@@ -19,7 +21,7 @@
         else{
             
             // Busca os dados do produto no DB.
-            $produto = buscar_produto();
+            $product = new GetProduct($productId);
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['quantidade'], $_POST['submit'])) ){
 
@@ -28,10 +30,10 @@
                 if (is_numeric($quant)){
 
                     $quant = floor((float)$quant);
-                    if ($quant > 0 && $quant <= $produto[0]['quantidade_estoque']){
+                    if ($quant > 0 && $quant <= $product->getQuantityInStock()){
                         
                         // Calcula o preço total.
-                        $preco = $produto[0]['preco'] * $quant;
+                        $preco = $product->getPrice() * $quant;
                         
                         // Ir para a pagina de confirmação da compra.
                         $confirmacao = TRUE;
@@ -62,65 +64,68 @@
     <!-- IMPORTA O CABEÇALHO PADRÃO DO SITE -->
     <?php require "header.php" ?>
 
-    <main class="container row">
+    <main class="container row" style="margin-left: auto; margin-right:auto;">
+        <section class="container row">
     
-        <?php 
-        if($confirmacao === FALSE){ ?>
+            <?php 
+            if($confirmacao === FALSE){ ?>
 
-            <div class="container col-12 col-md-6">
-                <section>
-                    <h1><?php echo $produto[0]['titulo_produto']; ?></h1>               
-                    <h4>R$ <?php echo formatar_preco($produto[0]['preco']); ?></h4>
-                    <p>Vendedor: <?php echo $produto[0]['nome']; ?></p>
-                </section>
-                <form method="post" action="">
-                    <label>Deseja comprar quantas unidades: </label>
-                    <input type="number" name="quantidade" value="1" min="1" max="<?php echo $produto[0]['quantidade_estoque'] ?>">
+                <div class="container col-12 col-md-6">
+                    <section>
+                        <h1><?php echo $product->getProductTitle(); ?></h1>               
+                        <h4>R$ <?php echo formatar_preco($product->getPrice()); ?></h4>
+                        <p>Vendedor: <?php echo $product->getSellerName(); ?></p>
+                    </section>
+                    <form method="post" action="">
+                        <label>Deseja comprar quantas unidades: </label>
+                        <input type="number" name="quantidade" value="1" min="1" max="<?php echo $product->getQuantityInStock(); ?>">
 
-                    <!-- Produz a mensagem de "valor inválido" durante a validação da quantidade -->
-                    <label><?php echo $msg_quant; ?></label><br>
+                        <!-- Produz a mensagem de "valor inválido" durante a validação da quantidade -->
+                        <label><?php echo $msg_quant; ?></label><br>
 
-                    <input class="btn btn-success" type="submit" name="submit" value="Comprar">
-                </form> 
-            </div>
-            <figure class="col-12 col-md-6">
-                <figcaption style="display: none;"><?php echo $produto[0]['titulo_produto']; ?></figcaption>
-                <img src="imagem-produto.php?id_produto=<?php echo $produto[0]['id_produto']; ?>"
-                    alt="<?php echo $produto[0]['titulo_produto']; ?>"
-                    style="max-width: 100%; max-height: 500px;"
-                >
-            </figure>
+                        <input class="btn btn-success" type="submit" name="submit" value="Comprar">
+                    </form> 
+                </div>
+                <figure class="col-12 col-md-6">
+                    <figcaption style="display: none;"><?php echo $product->getProductTitle(); ?></figcaption>
+                    <img src="imagem-produto.php?id_produto=<?php echo $product->getProductId(); ?>"
+                        alt="<?php echo $product->getProductTitle(); ?>"
+                        style="max-width: 100%; max-height: 500px;"
+                    >
+                </figure>
 
-        <?php 
-        }
-        elseif ($confirmacao === TRUE) { ?>
-            <div class="col-12 col-sm-6">
-                <section>
-                    <h1>Confirmar Compra: </h1>
-                    <h2><?php echo $produto[0]['titulo_produto'] ?></h2>
-                    <h4>Preço total: R$ <?php echo formatar_preco($preco); ?></h4>
-                    <p>Vendedor: <?php echo $produto[0]['nome']; ?></p>
-                </section>
-                <form method="post" action="account/processos/confirmar-compra.php">
-                    <label>Você vai comprar <strong><?php echo $quant; ?></strong> unidades</label>
-                    <input class="btn btn-success" type="submit" name="submit" value="Confirmar Compra">
+            <?php 
+            }
+            elseif ($confirmacao === TRUE) { ?>
+                <div class="container col-12 col-sm-6">
+                    <section>
+                        <h1>Confirmar Compra: </h1>
+                        <h2><?php echo $product->getProductTitle(); ?></h2>
+                        <h4>Preço total: R$ <?php echo formatar_preco($preco); ?></h4>
+                        <p>Vendedor: <?php echo $product->getSellerName(); ?></p>
+                    </section>
+                    <form method="post" action="account/processos/confirmar-compra.php">
+                        <label>Você vai comprar <strong><?php echo $quant; ?></strong> unidades</label>
+                        <input class="btn btn-success" type="submit" name="submit" value="Confirmar Compra">
 
-                    <!-- GUARDA O ID E A QUANTIDADE DE PRODUTOS À SEREM COMPRADOS -->
-                    <input type="hidden" name="quantidade_comprada" value="<?php echo $quant; ?>">
-                    <input type="hidden" name="id_produto" value="<?php echo $produto[0]['id_produto']; ?>">
+                        <!-- GUARDA O ID E A QUANTIDADE DE PRODUTOS À SEREM COMPRADOS -->
+                        <input type="hidden" name="quantidade_comprada" value="<?php echo $quant; ?>">
+                        <input type="hidden" name="id_produto" value="<?php echo $product->getProductId(); ?>">
 
-                </form>
-            </div>
-            <figure class="col-12 col-sm-6">
-                <figcaption style="display: none;"><?php echo $produto[0]['titulo_produto']; ?></figcaption>
-                <img src="imagem-produto.php?id_produto=<?php echo $produto[0]['id_produto']; ?>"
-                    alt="<?php echo $produto[0]['titulo_produto']; ?>"
-                    style="max-width: 100%; max-height: 500px;"
-                >
-            </figure>
+                    </form>
+                </div>
+                <figure class="col-12 col-sm-6">
+                    <figcaption style="display: none;"><?php echo $product->getProductTitle(); ?></figcaption>
+                    <img src="imagem-produto.php?id_produto=<?php echo $product->getProductId(); ?>"
+                        alt="<?php echo $product->getProductTitle(); ?>"
+                        style="max-width: 100%; max-height: 500px;"
+                    >
+                </figure>
 
-        <?php 
-        } ?>
+            <?php 
+            } ?>
+
+        </section>
 
     </main>
 

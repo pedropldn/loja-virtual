@@ -2,6 +2,7 @@
 
     session_start();
     require_once "../../lib/funcoes.php";
+    require_once "../../lib/GetProduct.php";
     
     // verifica se o usuário está logado. Se não estivar, manda ele pra página de login.
     if (!isset($_SESSION['id_user'])){
@@ -14,17 +15,21 @@
         header("Location: 404.php");
     }
 
+    
+
     if (isset($_POST['submit'], $_POST['quantidade_comprada'])){
 
         // Busca os dados do produto no DB.
         $id_produto = limpeza($_POST['id_produto']);
-        $produto = buscar_produto($id_produto);
+
+        // Busca os dados do produto em questão no banco de dados.
+        $product = new GetProduct($id_produto);
 
         // Se o usuário estiver comprando seu próprio produto, manda ele para a 404.php
         // Ou se o produto não existir no banco de dados, também manda para a 404.php
         if ( isset($_SESSION['id_user']) || (count($produto) === 0) ){
 
-            if ($_SESSION['id_user'] === $produto[0]['id_user_vendedor']){ 
+            if ($_SESSION['id_user'] === $product->getSellerUserId()){ 
                 header("Location: 404.php");
             }
 
@@ -36,15 +41,14 @@
             // Limpa os dados recebidos através do método post.
             $quant = (int)$quant;
 
-            // Busca os dados do produto no DB.
-            $produto = buscar_produto($id_produto);
+            $quantityInStock = $product->getQuantityInStock();
 
             if (is_nan($quant)){
 
                 header("Location: 404.php");
 
             }
-            elseif ($quant > 0 && $quant <= $produto[0]['quantidade_estoque']){
+            elseif ($quant > 0 && $quant <= $quantityInStock){
                 
                 try {
 
@@ -53,11 +57,11 @@
                     $conn->beginTransaction();
 
                     // Calcula o preço total e a quantidade de produtos que sobrará no estoque.
-                    $preco = $produto[0]['preco'] * $quant;
-                    $nova_quantidade = $produto[0]['quantidade_estoque'] - $quant;
+                    $preco = $product->getPrice() * $quant;
+                    $nova_quantidade = $quantityInStock - $quant;
 
                     // Retira a quantidade de produtos da tabela "produtos_a_venda".
-                    if ($quant === $produto[0]['quantidade_estoque']){
+                    if ($quant === $quantityInStock){
 
                         $conn->exec("
                             delete from produtos_a_venda
@@ -65,7 +69,7 @@
                         ");
 
                     }
-                    elseif ($quant < $produto[0]['quantidade_estoque']){
+                    elseif ($quant < $quantityInStock){
 
                         $conn->exec("
                             update produtos_a_venda
@@ -100,11 +104,11 @@
 
                     // Vincula os dados da negociacao à cada placeholder correspondente.
                     $stat->bindParam(":id_comprador", $_SESSION['id_user']);
-                    $stat->bindParam(":id_vendedor", $produto[0]['id_user_vendedor']);
-                    $stat->bindParam(":id_produto", $produto[0]['id_produto']);
-                    $stat->bindParam(":titulo_produto", $produto[0]['titulo_produto']);
+                    $stat->bindParam(":id_vendedor", $product->getSellerUserId());
+                    $stat->bindParam(":id_produto", $product->getProductId());
+                    $stat->bindParam(":titulo_produto", $product->getProductTitle());
                     $stat->bindParam(":quantidade_negociada", $quant);
-                    $stat->bindParam(":preco_unidade", $produto[0]['preco']);
+                    $stat->bindParam(":preco_unidade", $product->getPrice());
 
                     // Cria um timestamp do momento da negociação.
                     $t = time();
