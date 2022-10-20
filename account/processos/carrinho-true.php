@@ -32,7 +32,8 @@
             </div>
             <div class="col-12 col-sm-4 ">
                 <img src="imagem-produto.php?id_produto=<?php echo $p['id_produto']; ?>" 
-                    alt="<?php echo $p['titulo_produto']; ?>"
+                alt="<?php echo $p['titulo_produto']; ?>"
+                    style="max-width: 100%;
                 >
             </div>
 
