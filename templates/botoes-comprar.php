@@ -9,8 +9,16 @@
             header("Location: login.php");
         }
 
-        $id_produto = limpeza($_GET['id_produto']);
-        adiciona_ao_carrinho($id_produto);
+        require_once "lib/ShopCart.php";
+
+        // Limpa o id do produto e o id do usuário para trabalhar com o objeto carrinho (ShopCart).
+        $productId = limpeza($_GET['id_produto']);
+        $shopCart = new ShopCart(
+            limpeza($_SESSION['id_user'])
+        );
+
+        // Adiciona o id do produto ao carrinho.
+        $shopCart->addProduct($productId);
 
     }
 ?>

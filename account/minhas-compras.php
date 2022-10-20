@@ -25,7 +25,7 @@
     <?php
 
             foreach ($compras as $value){
-                            
+
                 // Formata a string do preço.
                 $preco_total = formatar_preco( $value['preco_unidade'] * $value['quantidade_negociada'] );
                 $data = date("d/m/Y à\s H:i:s", $value['data_negociacao']); ?>

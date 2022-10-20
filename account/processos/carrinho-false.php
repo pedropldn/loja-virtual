@@ -11,7 +11,11 @@
 
     <?php
 
-        foreach ($produtos as $k => $p){ 
+    //echo "<pre>";
+    //var_dump($products);
+    //echo "</pre>";
+
+        foreach ($products as $k => $p){ 
 
             ?>
             
@@ -20,7 +24,7 @@
                     <h4><?php echo $p['titulo_produto']; ?></h4>
                     <p>R$ <?php echo formatar_preco($p['preco']); ?></p>
                     <label>Quantidade: </label>
-                    <input type="number" name="<?php echo $p['id_produto']; ?>" min="1" max="<?php echo $p['quantidade_estoque']; ?>">
+                    <input type="number" required name="<?php echo $p['id_produto']; ?>" min="1" max="<?php echo $p['quantidade_estoque']; ?>">
                     <p><a href="account.php?link=carrinho&remove_shop_cart=<?php echo $p['id_produto'] ?>">Remover do Carrinho</a></p>
                 </div>
                 <div class="col-12 col-md-4 ">

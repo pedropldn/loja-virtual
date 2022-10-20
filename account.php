@@ -7,11 +7,7 @@
     $domain = "https://programadorpedroluiz.epizy.com/";
 
     // verifica se o usuário está logado. Se não estivar, manda ele pra página de login.
-    if (!isset($_SESSION['id_user'])){
-        session_unset();
-        session_destroy();
-        header("Location: login.php");
-    }
+    checkUserIsLogged();
     
     // Formata o nome do usuario pra aparecer apenas o primeiro nome.
     $nome = limpeza($_SESSION['nome']);

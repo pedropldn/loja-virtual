@@ -2,6 +2,7 @@
 
     session_start();
     require_once "../../lib/funcoes.php";
+    require_once "../../lib/ShopCart.php";
 
     // verifica se o usuário está logado. Se não estivar, manda ele pra página de login.
     if (!isset($_SESSION['id_user'])){
@@ -16,7 +17,8 @@
 
     if (isset($_POST['submit'])){
 
-        $carrinho = busca_carrinho_usuario($_SESSION['id_user']);
+        $shopCart = new ShopCart($_SESSION['id_user']);
+        $shopCartProductsIds = $shopCart->getProductsIds();
 
     }
     else {
@@ -47,7 +49,7 @@
     ");
 
     // Valida cada um dos dados de cada produto do carrinho.
-    foreach ($carrinho['produtos'] as $id){
+    foreach ($shopCartProductsIds as $id){
 
         if (isset($_POST[ ('quant_' . $id) ])){
 
@@ -141,12 +143,8 @@
 
     }
 
-    //$conn->rollBack();
     $conn->commit();
-    esvaziar_carrinho($_SESSION['id_user']);
+    $shopCart->cleanAllProducts();
     header("Location: ../../account.php?link=compras");
-    //var_dump($_POST);
-    //echo "<br>";
-    //var_dump($carrinho);
 
 ?>

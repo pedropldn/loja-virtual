@@ -4,13 +4,13 @@
         <h1>Confirme Sua Compra: </h1>
     <?php
 
-    if (count($produtos) === 0){
+    if (count($products) === 0){
         header("Location: account.php?link=carrinho");
     }
 
     $preco_total = 0;
 
-    foreach ($produtos as $k => $p){ 
+    foreach ($products as $k => $p){ 
 
         if ($p['quant'] === 0){
             remove_do_carrinho($p['id_produto']);
