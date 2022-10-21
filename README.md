@@ -28,8 +28,7 @@
       colocar seus próprios produtos à venda</a> (desde que já tenha criado sua própria conta);</li>
 </ul>
 
-<h2>Funcionalidade à Serem Implementadas:</h2>
+<h2>Funcionalidades à Serem Implementadas:</h2>
 <ul>
   <li>Simulação de sistema de pagamento através da API Stripe;</li>
-  <li></li>
 </ul>
