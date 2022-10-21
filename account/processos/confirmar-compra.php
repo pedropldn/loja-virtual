@@ -25,6 +25,13 @@
         // Busca os dados do produto em questão no banco de dados.
         $product = new GetProduct($id_produto);
 
+        // Se o usuário estiver comprando seu próprio produto, manda ele pra 404.php.
+        if ( (int)$_SESSION['id_user'] === (int)$product->getSellerUserId() ){ 
+        
+            header("Location: 404.php");
+    
+        }
+
         // Se o usuário estiver comprando seu próprio produto, manda ele para a 404.php
         // Ou se o produto não existir no banco de dados, também manda para a 404.php
         if ( isset($_SESSION['id_user']) || (count($produto) === 0) ){

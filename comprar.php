@@ -16,7 +16,7 @@
         $productId = limpeza($_GET['id_produto']);
 
         if (!isset($_SESSION['id_user'])){
-            header("Location: login.php?buy={$id_produto}");
+            header("Location: login.php?buy={$productId}");
         }
         else{
             
@@ -77,13 +77,35 @@
                         <p>Vendedor: <?php echo $product->getSellerName(); ?></p>
                     </section>
                     <form method="post" action="">
-                        <label>Deseja comprar quantas unidades: </label>
-                        <input type="number" name="quantidade" value="1" min="1" max="<?php echo $product->getQuantityInStock(); ?>">
+                        
 
-                        <!-- Produz a mensagem de "valor inválido" durante a validação da quantidade -->
-                        <label><?php echo $msg_quant; ?></label><br>
+                        <?php
+                        if (isset($_SESSION['id_user'])){
+                    
+                            if ( (int)$_SESSION['id_user'] !== (int)$product->getSellerUserId() ){ ?>
+                            
+                                <label>Deseja comprar quantas unidades: </label>
+                                <input type="number" name="quantidade" value="1" min="1" max="<?php echo $product->getQuantityInStock(); ?>">
 
-                        <input class="btn btn-success" type="submit" name="submit" value="Comprar">
+                                <!-- Produz a mensagem de "valor inválido" durante a validação da quantidade -->
+                                <label><?php echo $msg_quant; ?></label><br>
+                                
+                                <input class="btn btn-success" type="submit" name="submit" value="Comprar">
+                            
+                            <?php
+                            }
+                            else { ?>
+
+                                <p>Lembrando que você não pode comprar seu próprio produto!!!</p>
+
+                            <?php
+                            }
+
+                        }
+                        else {
+                            require_once "templates/botoes-comprar.php";
+                        } ?>
+
                     </form> 
                 </div>
                 <figure class="col-12 col-md-6">
