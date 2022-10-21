@@ -3,6 +3,8 @@
     require_once "lib/funcoes.php";
     require_once "lib/User.php";
 
+    // Essa classe é responsável pela criação de novas contas de usuários, manipulando os
+    // dados e fazendo as modificações no banco de dados.
     class CreateUser extends User {
 
         public function __construct(string $name, string $email, string $password){
@@ -15,6 +17,7 @@
                 where email=\"{$email}\";
             ")->fetchAll();
 
+            // Se o email já estiver cadastrado, envia uma mensagem de erro.
             if (count($res) > 0){
 
                 $this->success = false;
@@ -39,6 +42,8 @@
                     $password,
                 ]);
 
+                // Se der tudo certo, salvá as alterações no banco de dados.
+                // Caso contrário, desfaz as alterações sem salvá-las e lança uma Exceção.
                 if ($success) {
 
                     $this->conn->commit();
@@ -49,7 +54,8 @@
 
                     $pdostat->rollBack();
                     $this->success = false;
-                    $this->errorMessage = "Erro no sistema! Avise a equipe de programação da Market Simulation";
+                    throw new Exception("Erro no sistema! Avise a equipe de programação da Market Simulation");
+                    exit;
 
                 }
 

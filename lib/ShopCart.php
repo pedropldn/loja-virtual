@@ -44,14 +44,14 @@
 
         }
 
-        // Essa função retorna a lista de ids de todos os produtos que estão no carrinho.
+        // Esse método retorna a lista de ids de todos os produtos que estão no carrinho.
         public function getProductsIds(){
 
             return $this->shopCart['produtos'];
 
         }
 
-        // Essa função retorna a lista de produtos no carrinho, com todos os dados de cada produto.
+        // Esse método retorna a lista de produtos no carrinho, com todos os dados de cada produto.
         public function getProducts(){
 
             // Prepara a SQL pra buscar um produto de cada vez.
@@ -107,7 +107,7 @@
 
         }
 
-        // Função interna que atualizará no banco de dados, as modificações que forem feitas no carrinho.
+        // Método interno que atualizará no banco de dados, as modificações que forem feitas no carrinho.
         protected function updateDB(){
 
             $shopCartEncoded = json_encode($this->shopCart);
@@ -119,7 +119,7 @@
 
         }
 
-        // Essa função serve pra remover todos os produtos do carrinho de compras.;
+        // Esse método serve pra remover todos os produtos do carrinho de compras.;
         public function cleanAllProducts(){
 
             // Remove os registros do banco de dados.
@@ -134,7 +134,7 @@
 
         }
 
-        // Adiciona um novo produto ao carrinho. 
+        // Método que adiciona um novo produto ao carrinho. 
         public function addProduct(string $productId){
 
             // Limpa o dado que foi recebido.

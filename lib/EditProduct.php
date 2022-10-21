@@ -3,6 +3,8 @@
     require_once "funcoes.php";
     require_once "Product.php";
 
+    // Essa classe é responsável por fazer a edição dos dados de um produto
+    // que já está cadastrado na loja virtual.
     class EditProduct extends Product {
 
         public function __construct($product_id){
@@ -32,6 +34,7 @@
 
             }
 
+            // Guarda cada informação do produto em suas propriedade correspondentes da classe.
             $this->productId = $queryResult[0]['id_produto'];
             $this->sellerUserId = $queryResult[0]['id_user_vendedor'];
             $this->productTitle  = $queryResult[0]['titulo_produto'];
@@ -41,6 +44,8 @@
 
         }
 
+        // Esse método é responsável por salvar no banco de dados, as alterações que forem feitas
+        // no objeto EditProduct.
         public function save(){
 
             if (!parent::save()){
@@ -103,6 +108,7 @@
         // Se essa função recebe o argumento NULL, mantem a imagem anterior sem alterá-la. 
         public function setImage($imageFieldName){
 
+            // Se o usuário não inseriu uma nova imagem, prepara para manter a mesma no banco de dados.
             if ($imageFieldName === null){
 
                 $this->productImage = true;
@@ -110,6 +116,7 @@
                 return "";
 
             }
+            // Porém, se uma nova imagem for inserida, chama o "método pai" da classe, para a validação da imagem.
             else {
 
                 parent::setImage($imageFieldName);

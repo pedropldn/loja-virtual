@@ -3,6 +3,8 @@
 // Importa a lib de funções.
 require_once "funcoes.php";
 
+// Essa classe é responsável por fazer a busca de vários produtos ao mesmo tempo no banco de dados.
+// Serve especialmente para as páginas index.php e search.php;
 class SearchProducts {
 
     protected $conn;                    // Guarda PDO (conexão com o DB)
@@ -43,11 +45,13 @@ class SearchProducts {
             return false;
         }
 
+        // Verifica possíveis falhas nos números de paginação.
         if ($minIndex > $this->numberProductsReturned ||
             $page_number === 0){
                 header("Location: 404.php");
             }
 
+        // retorna a página correspondente com a lista de produtos.
         return array_slice(
             $this->returnedProducts,
             $minIndex,
@@ -56,7 +60,7 @@ class SearchProducts {
 
     }
 
-    // Essa função retorna o total de páginas na qual serão mostrados todos os produtos.
+    // Esse método retorna o total de páginas na qual serão mostrados todos os produtos.
     public function totalPages(){
 
         return ceil($this->numberProductsReturned / 12);

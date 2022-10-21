@@ -25,6 +25,7 @@
 
         }
 
+        // Método que diz ser as operações feitas pelo objeto foram bem sucedidas ou não.
         public function success(){
             return $this->success;
         }

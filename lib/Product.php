@@ -5,17 +5,18 @@
     // Essa classe representa a estrutura básica de um produto.
     abstract class Product {
 
-        protected $conn; 
+        protected $conn;            // Guarda um PDO de conexão com o banco de dados
 
-        protected $productId = null;
+        // Cada uma dessas variáveis irá guardar as informações correspondentes do produto.
+        protected $productId = null;        
         protected $sellerUserId = null;
         protected $productTitle = null;
         protected $quantityInStock = null;
         protected $price = null;
         protected $description = null;
 
-        protected $productImage = null;
-        protected $productImageType = null;
+        protected $productImage = null;     // Guarda o arquivo de imagem se será aberto pelo fopen().
+        protected $productImageType = null; // Guarda o tipo da imagem (png, jpg, webp, etc)
 
         protected function __construct(){
 
@@ -23,7 +24,7 @@
 
         }
 
-        // Essa função é a parte abstrata das funções filhas que serão responsáveis por
+        // Esse método é a parte abstrata das funções filhas que serão responsáveis por
         // alterar as informações do produto diretamente no banco de dados.
         protected function save(){
 
@@ -41,7 +42,7 @@
 
         }
 
-    // A função abaixo faz a verificação de todas as informações do produto para
+    // O método abaixo faz a verificação de todas as informações do produto para
     // saber se ele pode ser salvo no banco de dados ou não.
     protected function checkAllData(){
 
@@ -66,7 +67,7 @@
     }
 
     // ================================================================
-        // As seguintes funções são específicas para acessar cada informação do produto.
+        // Os seguintes métodos são específicos para acessar cada informação do produto.
         public function getProductId(){
             return $this->productId;
         }

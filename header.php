@@ -1,6 +1,7 @@
 <header class="container-fluid row">
     <div id="logo" class="container-fluid col-12 col-md-6">
         <a href="https://www.linkedin.com/in/pedro-luiz-dias-neto-943539252/" 
+            target="_blank"
             style="display: block;">Pedro Luiz Dias Neto</a>
     </div>
     <nav id="main-nav" class="container-fluid col-12 col-md-6">

@@ -3,6 +3,7 @@
     require_once "funcoes.php";
     require_once "Product.php";
 
+    // Essa classe é responsável por manipular a criação de novos produtos no banco de dados. 
     class CreateProduct extends Product {
 
         public function __construct(int $id_user){
@@ -16,6 +17,8 @@
 
         }
 
+        // Ess método é responsável por salvar no banco de dados, as alterações que forem feitas no
+        // objeto CreateProduct.
         public function save(){
 
             if (!parent::save()){
@@ -56,6 +59,8 @@
 
             $success2 = $stat2->execute();
 
+            // Se deu tudo certo nas alterações, salva (commit) no banco de dados.
+            // Caso contrário desfaz todas as alterações sem salvá-las.
             if ($success1 && $success2){
                 $this->conn->commit();
                 return true;

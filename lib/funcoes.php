@@ -29,6 +29,7 @@ function validacao_email( $email="" ){
     }
 }
 
+// Formata os preços como uma string com os 2 digitos de centavos.
 function formatar_preco($preco_db){
     $p_format = str_replace( ".", ",", (string)$preco_db );
     $pos_virg = strpos($p_format, ",");
@@ -57,6 +58,7 @@ function busca_usuario($id_user){
     if (count($queryResult) === 0){
 
         throw new Exception("Usuário não existe no banco de dados! (function busca_usuario() -> funcoes.php)");
+        exit;
 
     }
     else {

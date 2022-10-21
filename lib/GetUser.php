@@ -3,6 +3,8 @@
     require_once "funcoes.php";
     require_once "User.php";
 
+    // Essa class busca as informações de um usuário específico no banco de dados,
+    // Principalmente para a realização de login no sistema da loja virtual.
     class GetUser extends User{
 
         // O parâmetro "$email_id" pode ser do tipo inteiro ou string.
@@ -47,7 +49,7 @@
 
                 // Se chegar aqui, é porque a classe foi inicilizada com argumentos do tipo errado.
                 // O IDEAL É LANÇAR UMA EXCEÇÃO.
-                throw new ErrorException("OBJETO GetUser RECEBEU ARGUMENTOS DO TIPO ERRADO NA INSTANCIAÇÃO!");
+                throw new Exception("OBJETO GetUser RECEBEU ARGUMENTOS DO TIPO ERRADO NA INSTANCIAÇÃO!");
                 exit;
 
             }
@@ -57,12 +59,13 @@
 
                 // Se chegar aqui é porque existem dados duplicados no banco de dados 
                 // que não deveriam estar duplicados.
-                header("Location: 404.php");   
+                throw new Exception("Problemas com usuários duplicados no banco de dados. Contate a equipe de programação!");
                 exit;      
 
             }
             elseif (count($query) === 1){
 
+                // Guarda os dados do usuário em suas propriedades correspondentes.
                 $this->idUser = $query[0]['id_user'];
                 $this->name = $query[0]['nome'];
                 $this->email = $query[0]['email'];

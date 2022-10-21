@@ -2,9 +2,11 @@
 
     require_once "Product.php";
 
+    // Essa classe é responsável por obter dados de um produto específico,
+    // especialmente para a construção das páginas de produto.
     class GetProduct extends Product {
 
-        protected $errorMessage;
+        protected $errorMessage;    // Guarda a mensagem de erro caso algo dê errado.
 
         public function __construct($product_id){
 
@@ -35,6 +37,7 @@
              }
              else {
 
+                // Guarda cada informação do produto nas propriedades correspondentes do objeto GetProduct.
                 $this->productId = $queryResult[0]['id_produto'];
                 $this->sellerUserId = $queryResult[0]['id_user_vendedor'];
                 $this->productTitle  = $queryResult[0]['titulo_produto'];
